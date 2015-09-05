@@ -124,11 +124,18 @@ class Scraper:
             else:
                 style="float:left; width:200px;"
 
+            if userType == "student":
+                if classes:
+                    adv = self.db.advisements.find_one({"mID": classes[0]})
+                    if adv:
+                        department = adv['title']
+
             search_results = intrabody.xpath('//div[@style="'+style+'"]/span[1]/text()')
             #print search_results
 
             if len(search_results) == 0:
-                raise ValueError('Couldn\'t find student on Intranet.')
+                print "Found on Moodle but not the Intranet. Disregarding."
+                return # should people found only on Moodle be included?
 
             #print "Intranet found "+str(len(search_results))+" search results for", name_parts
             for result in search_results:
@@ -169,11 +176,9 @@ class Scraper:
                         "advisement": department,
                         "courses": courses,
                         "sclasses": classes,
-                        "rank": 0,
-                        "registered": False
                     }
                     newID = self.db.students.insert_one(out).inserted_id
-                    print "Student " + username + " in Advisement " + department + " with Student ID "+code
+                    print "Student " + username + " in Advisement " + department + " with Student ID "+code+" in "+str(len(classes))+" courses"
 
                     if classes:
                         self.db.advisements.update_one({"mID": classes[0]}, {"$push": {"students": newID} } )
@@ -185,7 +190,7 @@ class Scraper:
                                 self.db.students.update_one({"_id": newID}, {"$push": {"courses": cID}})
 
                 else:
-                    print "Staff Member " + username + " of the " + department + " Department with Staff ID "+code
+                    print "Staff Member " + username + " of the " + department + " Department with Staff ID "+code+" in "+str(len(classes))+" courses"
                     out = {
                         "userType": userType,
                         "mID": ID,
@@ -204,7 +209,7 @@ class Scraper:
                         course = collect.find_one({"mID": c})
                         if course:
                             if name_parts[0] in course["full"]:
-                                print "COURSE:", course['title']
+                                #print "COURSE:", course['title']
                                 collect.update_one({
                                   '_id': course['_id']
                                 },{
