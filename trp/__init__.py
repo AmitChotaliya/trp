@@ -53,7 +53,7 @@ class TRP:
             self.client = MongoClient('mongodb://'+IP+':'+PORT+'/')
             self.db = self.client[DB_NAME]
             self.db.students.count()
-            print "Done..."
+            print "Done."
         except Exception: # nasty I know
             self.client = None
             print "Failed to connect to Database."
@@ -87,7 +87,7 @@ class TRP:
             quit()
 
         print "Logged in to the Intranet."
-        print "Done..."
+        print "Done."
         return session
 
     def init_mods(self):
@@ -95,7 +95,7 @@ class TRP:
         self.viewer = Viewer(self.db)
         self.scraper = Scraper(self.db, self.session)
         self.cli = CLI(self.db)
-        print "Done..."
+        print "Done."
 
     def exit(self):
         try: # this might be run before it is assigned
@@ -110,7 +110,7 @@ class TRP:
 
 def main():
     t = TRP()
-    t.cli.run()
+    t.scraper.extract(11, "")
 
 if __name__ == "__main__":
     main()

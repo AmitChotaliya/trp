@@ -16,6 +16,7 @@ class Scraper:
             self.extract(i, category)
 
     def extract(self, ID, category):
+        print str(ID)+":",
         base_url = "http://moodle.regis.org/user/profile.php?id="
         if category is "course":
             base_url = "http://moodle.regis.org/course/view.php?id="
@@ -115,15 +116,54 @@ class Scraper:
             collect = self.db.courses
             courses = []
 
+            intranet = self.session.get("http://intranet.regis.org/infocenter/default.cfm?FuseAction=basicsearch&searchtype=namewildcard&criteria="+name_parts[0]+"%2C+"+name_parts[1]+"&[whatever]=Search")
+            intrabody = html.fromstring(intranet.text)
+
+            if userType == "student":
+                style="float:left;width:200px;"
+            else:
+                style="float:left; width:200px;"
+
+            search_results = intrabody.xpath('//div[@style="'+style+'"]/span[1]/text()')
+            #print search_results
+
+            if len(search_results) == 0:
+                raise ValueError('Couldn\'t find student on Intranet.')
+
+            #print "Intranet found "+str(len(search_results))+" search results for", name_parts
+            for result in search_results:
+                name_p = str(result).split(", ")
+                intranet_dep = name_p[1].split(" ")[1].replace("(", "").replace(")", "")
+
+                first_name = name_p[1].split(" ")[0]
+                last_name = name_p[0]
+                #print "Attempting to match "+ str([name_parts[0], name_parts[1], department])+" with " + str([last_name, first_name, intranet_dep])
+                if [last_name, first_name] == name_parts:
+                    if userType == "student":
+                        if intranet_dep == department:
+                            #print "Yup!"
+                            break
+                    else:
+                        #print "Yup!"
+                        break
+                #print "Nope"
+
+            email = intrabody.xpath('//div[@style="'+style+'"]/span[2]/a/text()')[0]
+            #print email
+            username = str(email).replace("@regis.org", "")
+
+            pic_elm = intrabody.xpath('//div[@style="'+style+'"]/a')[0]
+            code = pic_elm.get("href").split("/")[-1].replace(".jpg", "")
+            #print code
+
             try:
                 if userType == "student":
-                    username = name_parts[1].lower()[0].replace(" ", "").replace("\'", "") + name_parts[0].lower().replace("\'", "").replace(" ", "") + str(19 - int(f))
                     out = {
                         "mID": ID,
                         "firstName": name_parts[1],
                         "lastName": name_parts[0],
                         "username": username,
-                        "code": "Unknown",
+                        "code": code,
                         "mpicture": picsrc,
                         "email": username + "@regis.org",
                         "advisement": department,
@@ -133,11 +173,10 @@ class Scraper:
                         "registered": False
                     }
                     newID = self.db.students.insert_one(out).inserted_id
-                    print "Student " + str(ID) + ": " + str(newID)
+                    print "Student " + username + " in Advisement " + department + " with Student ID "+code
 
                     if classes:
                         self.db.advisements.update_one({"mID": classes[0]}, {"$push": {"students": newID} } )
-                        print "Added Student "+str(ID)+" to Advisement "+classes[0]
                         for c in classes: # C IS A MOODLE ID
                             course = collect.find_one({"mID": c})
                             if course:
@@ -146,7 +185,7 @@ class Scraper:
                                 self.db.students.update_one({"_id": newID}, {"$push": {"courses": cID}})
 
                 else:
-                    username = name_parts[1].lower()[0].replace(" ", "").replace("\'", "") + name_parts[0].lower().replace("\'", "").replace(" ", "")
+                    print "Staff Member " + username + " of the " + department + " Department with Staff ID "+code
                     out = {
                         "userType": userType,
                         "mID": ID,
@@ -155,13 +194,12 @@ class Scraper:
                         "firstName": name_parts[1],
                         "lastName": name_parts[0],
                         "username": username,
-                        "email": name_parts[1].lower()[0].replace(" ", "") + name_parts[0].lower().replace(" ",
-                                                                                                           "") + "@regis.org",
+                        "email": email,
                         "sclasses": classes,
                         "courses": courses
                     }
                     newID = self.db.teachers.insert_one(out).inserted_id
-                    print "Teacher " + str(ID) + ": " + str(newID)
+                    #print "Teacher " + str(ID) + ": " + str(newID)
                     for c in classes:
                         course = collect.find_one({"mID": c})
                         if course:
@@ -184,7 +222,7 @@ class Scraper:
                                 'teacher': newID
                               }
                             })
-                            print "Set Teacher "+str(ID)+" as Advisor of "+adv['title']
+                            #print "Set Teacher "+str(ID)+" as Advisor of "+adv['title']
 
             #raw_input("Continue?")
             except Exception as e:
