@@ -10,7 +10,7 @@ class Scraper:
         print "Initialized Moodle Scraper"
         self.session = session
         self.db = db
-    
+
     def loop(self, from_id, to_id, category):
         for i in range(from_id, to_id + 1):
             self.extract(i, category)
@@ -134,10 +134,10 @@ class Scraper:
                     }
                     newID = self.db.students.insert_one(out).inserted_id
                     print "Student " + str(ID) + ": " + str(newID)
-                    self.db.advisements.update_one({"title": department}, {"$push": {"students": newID} } )
-                    print "Added Student "+str(ID)+" to Advisement "+department
 
                     if classes:
+                        self.db.advisements.update_one({"mID": classes[0]}, {"$push": {"students": newID} } )
+                        print "Added Student "+str(ID)+" to Advisement "+classes[0]
                         for c in classes: # C IS A MOODLE ID
                             course = collect.find_one({"mID": c})
                             if course:
