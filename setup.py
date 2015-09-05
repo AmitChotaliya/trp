@@ -11,7 +11,7 @@ with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
 
 setup(
     name='trp',
-    version='0.0.2a1',
+    version='0.0.3a1',
 
     description='Third-party Regis Python Module',
     long_description=long_description,
@@ -22,6 +22,8 @@ setup(
     author_email='thefrankmatranga@gmail.com',
 
     license='MIT',
+
+    install_requires=['pymongo', 'requests', 'lxml'],
 
     classifiers=[
         'Development Status :: 3 - Alpha',

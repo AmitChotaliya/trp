@@ -4,6 +4,8 @@
 **R** - Regis High School <br>
 **P** - Python <br>
 
+```$ pip2 install trp```
+
 ```python
 from trp import TRP
 # TRP will initialize everything

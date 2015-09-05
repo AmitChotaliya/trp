@@ -16,7 +16,7 @@ import requests
 from lxml import html
 
 VERSION = "0.1"
-PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),"..")) + "/secrets.json"
+PATH = "secrets.json"
 DB_NAME = "regis"
 IP = "localhost"
 PORT = "27017"
