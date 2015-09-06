@@ -110,7 +110,7 @@ class TRP:
 
 def main():
     t = TRP()
-    t.scraper.extract(15, "")
+    t.scraper.extract(1199, "user")
 
 if __name__ == "__main__":
     main()

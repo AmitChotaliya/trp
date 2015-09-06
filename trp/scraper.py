@@ -16,7 +16,7 @@ class Scraper:
             self.extract(i, category)
 
     def extract(self, ID, category):
-        print str(ID)+":",
+
         base_url = "http://moodle.regis.org/user/profile.php?id="
         if category is "course":
             base_url = "http://moodle.regis.org/course/view.php?id="
@@ -55,7 +55,7 @@ class Scraper:
                     "title": name.replace("Advisement ", ""),
                     "mID": ID
                 }
-                print "Advisement " + str(ID) + ": " + str(self.db.advisements.insert_one(out).inserted_id)
+                print str(ID)+": Advisement " + out['title'] + " " + str(self.db.advisements.insert_one(out).inserted_id)
 
             else:
                 grade = 13
@@ -82,7 +82,7 @@ class Scraper:
                     "students": [],
                     "grade": grade
                 }
-                print "Course " + str(ID) + ": " + str(self.db.courses.insert_one(out).inserted_id)
+                print str(ID)+": Course " + str(self.db.courses.insert_one(out).inserted_id)
         else:
             # USER
             name_parts = parsed_body.xpath('//title/text()')[0].split(":")[0].split(", ") if len(
@@ -139,6 +139,7 @@ class Scraper:
 
             #print "Intranet found "+str(len(search_results))+" search results for", name_parts
             for result in search_results:
+                index = search_results.index(result)
                 name_p = str(result).split(", ")
                 intranet_dep = name_p[1].split(" ")[1].replace("(", "").replace(")", "")
 
@@ -155,11 +156,11 @@ class Scraper:
                         break
                 #print "Nope"
 
-            email = intrabody.xpath('//div[@style="'+style+'"]/span[2]/a/text()')[0]
+            email = intrabody.xpath('//div[@style="'+style+'"]/span[2]/a/text()')[index]
             #print email
             username = str(email).replace("@regis.org", "")
 
-            pic_elm = intrabody.xpath('//div[@style="'+style+'"]/a')[0]
+            pic_elm = intrabody.xpath('//div[@style="'+style+'"]/a')[index]
             code = pic_elm.get("href").split("/")[-1].replace(".jpg", "")
             #print code
 
@@ -172,13 +173,14 @@ class Scraper:
                         "username": username,
                         "code": code,
                         "mpicture": picsrc,
+                        "ipicture": pic_elm.get("href"),
                         "email": username + "@regis.org",
                         "advisement": department,
                         "courses": courses,
                         "sclasses": classes,
                     }
                     newID = self.db.students.insert_one(out).inserted_id
-                    print "Student " + username + " in Advisement " + department + " with Student ID "+code+" in "+str(len(classes))+" courses"
+                    print str(ID)+": Student " + username + " in Advisement " + department + " with Student ID "+code+" in "+str(len(classes))+" courses"
 
                     if classes:
                         self.db.advisements.update_one({"mID": classes[0]}, {"$push": {"students": newID} } )
@@ -190,7 +192,7 @@ class Scraper:
                                 self.db.students.update_one({"_id": newID}, {"$push": {"courses": cID}})
 
                 else:
-                    print "Staff Member " + username + " of the " + department + " Department with Staff ID "+code+" in "+str(len(classes))+" courses"
+                    print str(ID)+": Staff Member " + username + " of the " + department + " Department with Staff ID "+code+" in "+str(len(classes))+" courses"
                     out = {
                         "userType": userType,
                         "mID": ID,
