@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+# -*- coding: utf-8 -*-
 
 # ==============================================================================
 #      Frank Matranga's Third-party Regis High School Python Module
@@ -109,6 +110,7 @@ class TRP:
 
 def main():
     t = TRP()
+    t.scraper.extract(66, "")
     t.exit()
 
 if __name__ == "__main__":

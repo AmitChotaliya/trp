@@ -1,3 +1,5 @@
+#!/usr/bin/python2
+# -*- coding: utf-8 -*-
 import os
 import requests, sys
 from lxml import html
@@ -140,7 +142,7 @@ class Scraper:
             #print "Intranet found "+str(len(search_results))+" search results for", name_parts
             for result in search_results:
                 index = search_results.index(result)
-                name_p = str(result).split(", ")
+                name_p = result.encode('utf-8').split(", ")
                 intranet_dep = name_p[1].split(" ")[1].replace("(", "").replace(")", "")
 
                 first_name = name_p[1].split(" ")[0]
@@ -158,7 +160,7 @@ class Scraper:
 
             email = intrabody.xpath('//div[@style="'+style+'"]/span[2]/a/text()')[index]
             #print email
-            username = str(email).replace("@regis.org", "")
+            username = str(email).replace("@regis.org", "").lower()
 
             pic_elm = intrabody.xpath('//div[@style="'+style+'"]/a')[index]
             code = pic_elm.get("href").split("/")[-1].replace(".jpg", "")
