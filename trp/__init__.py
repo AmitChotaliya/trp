@@ -51,6 +51,7 @@ class TRP:
             print "Attempting to connect to mongodb://"+IP+":"+PORT+"/"+DB_NAME+"..."
             self.client = MongoClient('mongodb://'+IP+':'+PORT+'/')
             self.db = self.client[DB_NAME]
+            self.db.authenticate('ontrac', 'ontrac')
             self.db.students.count()
             print "Done."
         except Exception: # nasty I know

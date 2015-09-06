@@ -31,11 +31,11 @@ class Scraper:
         title = parsed_body.xpath('//title/text()')
         # Check if page is useful
         if len(title) == 0:
-            print "Bad title"
+            #print "Bad title"
             return
 
         if "Test" in title:
-            print "Skipped test entry"
+            #print "Skipped test entry"
             return
 
         if ("Error" in title[0].strip()) or ("Notice" in title[0].strip()):
@@ -134,9 +134,8 @@ class Scraper:
 
             search_results = intrabody.xpath('//div[@style="'+style+'"]/span[1]/text()')
             #print search_results
-
             if len(search_results) == 0:
-                print "Found on Moodle but not the Intranet. Disregarding."
+                print str(ID)+": Found on Moodle but not the Intranet. Disregarding."
                 return # should people found only on Moodle be included?
 
             #print "Intranet found "+str(len(search_results))+" search results for", name_parts
