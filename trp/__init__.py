@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+# -*- coding: utf-8 -*-
 
 # ==============================================================================
 #      Frank Matranga's Third-party Regis High School Python Module
@@ -50,6 +51,7 @@ class TRP:
             print "Attempting to connect to mongodb://"+IP+":"+PORT+"/"+DB_NAME+"..."
             self.client = MongoClient('mongodb://'+IP+':'+PORT+'/')
             self.db = self.client[DB_NAME]
+            self.db.authenticate('ontrac', 'ontrac')
             self.db.students.count()
             print "Done."
         except Exception: # nasty I know
@@ -109,6 +111,7 @@ class TRP:
 
 def main():
     t = TRP()
+    t.scraper.extract(66, "")
     t.exit()
 
 if __name__ == "__main__":

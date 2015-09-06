@@ -1,3 +1,5 @@
+#!/usr/bin/python2
+# -*- coding: utf-8 -*-
 import os
 import requests, sys
 from lxml import html
@@ -29,11 +31,11 @@ class Scraper:
         title = parsed_body.xpath('//title/text()')
         # Check if page is useful
         if len(title) == 0:
-            print "Bad title"
+            #print "Bad title"
             return
 
         if "Test" in title:
-            print "Skipped test entry"
+            #print "Skipped test entry"
             return
 
         if ("Error" in title[0].strip()) or ("Notice" in title[0].strip()):
@@ -132,15 +134,14 @@ class Scraper:
 
             search_results = intrabody.xpath('//div[@style="'+style+'"]/span[1]/text()')
             #print search_results
-
             if len(search_results) == 0:
-                print "Found on Moodle but not the Intranet. Disregarding."
+                print str(ID)+": Found on Moodle but not the Intranet. Disregarding."
                 return # should people found only on Moodle be included?
 
             #print "Intranet found "+str(len(search_results))+" search results for", name_parts
             for result in search_results:
                 index = search_results.index(result)
-                name_p = str(result).split(", ")
+                name_p = result.encode('utf-8').split(", ")
                 intranet_dep = name_p[1].split(" ")[1].replace("(", "").replace(")", "")
 
                 first_name = name_p[1].split(" ")[0]
@@ -158,7 +159,7 @@ class Scraper:
 
             email = intrabody.xpath('//div[@style="'+style+'"]/span[2]/a/text()')[index]
             #print email
-            username = str(email).replace("@regis.org", "")
+            username = str(email).replace("@regis.org", "").lower()
 
             pic_elm = intrabody.xpath('//div[@style="'+style+'"]/a')[index]
             code = pic_elm.get("href").split("/")[-1].replace(".jpg", "")
