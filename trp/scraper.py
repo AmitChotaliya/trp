@@ -198,6 +198,7 @@ class Scraper:
                         "userType": userType,
                         "mID": ID,
                         "image": picsrc,
+                        "ipicture": pic_elm.get("href"),
                         "department": department,
                         "firstName": name_parts[1],
                         "lastName": name_parts[0],
