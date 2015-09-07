@@ -11,7 +11,7 @@ with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
 
 setup(
     name='trp',
-    version='0.0.11a1',
+    version='0.0.12a1',
 
     description='Third-party Regis Python Module',
     long_description=long_description,

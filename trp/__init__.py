@@ -15,14 +15,20 @@ from pymongo import MongoClient
 import requests
 from lxml import html
 
-PATH = "secrets.json"
-DB_NAME = "regis"
-IP = "localhost"
-PORT = "27017"
+PATH = "./secrets.json"
+
+IP = "localhost" if len(sys.argv) < 3 else sys.argv[2]
+PORT = "27017" if len(sys.argv) < 4 else sys.argv[3]
+DB_NAME = "regis" if len(sys.argv) < 5 else sys.argv[4]
 
 class TRP:
-    def __init__(self, path=PATH):
+    def __init__(self, path=PATH, ip=IP, port=PORT, db_name=DB_NAME):
         self.path = path
+        self.ip = ip
+        self.port = port
+        self.db_name = db_name
+
+        print ip
         print " --- Initalizing TRP Module ---\n"
         #print "Arguments: "+str(sys.argv[1::])
         self.secrets = self.get_secrets()
@@ -35,12 +41,19 @@ class TRP:
         print "\n --- READY --- \n"
 
     def get_secrets(self):
-        if len(sys.argv) > 1 and os.path.isfile(sys.argv[1]):
+        if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
             self.path = sys.argv[1]
+
+        if os.path.isdir(self.path):
+            if self.path[-1] != "/":
+                self.path += "/"
+            self.path += "secrets.json"
+
+
         try:
             secrets = json.loads(open(self.path).read())
         except (ValueError, IOError):
-            print "No valid secrets.json found"
+            print "'"+self.path+"' is not a valid secrets.json"
             self.exit()
 
         print "Using path '"+self.path+"' for secrets.json"
@@ -48,8 +61,8 @@ class TRP:
 
     def connect_to_db(self):
         try:
-            print "Attempting to connect to mongodb://"+IP+":"+PORT+"/"+DB_NAME+"..."
-            self.client = MongoClient('mongodb://'+IP+':'+PORT+'/')
+            print "Attempting to connect to mongodb://"+self.ip+":"+self.port+"/"+self.db_name+"..."
+            self.client = MongoClient('mongodb://'+self.ip+':'+self.port+'/')
             self.db = self.client[DB_NAME]
             self.db.authenticate('ontrac', 'ontrac')
             self.db.students.count()
@@ -111,7 +124,6 @@ class TRP:
 
 def main():
     t = TRP()
-    t.scraper.extract(66, "")
     t.exit()
 
 if __name__ == "__main__":
