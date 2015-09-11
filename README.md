@@ -10,4 +10,5 @@
 from trp import TRP
 # TRP will initialize everything
 t = TRP(path) # path is the path to a valid secrets.json file
+t.scraper.scrape(1199, "person")
 ```
