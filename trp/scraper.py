@@ -121,8 +121,14 @@ class Scraper:
             intranet = self.session.get("http://intranet.regis.org/infocenter/default.cfm?FuseAction=basicsearch&searchtype=namewildcard&criteria="+name_parts[0]+"%2C+"+name_parts[1]+"&[whatever]=Search")
             intrabody = html.fromstring(intranet.text)
 
+            schedule = "<h2>Not Found</h2>"
+
             if userType == "student":
                 style="float:left;width:200px;"
+
+                htmlschedulereq = self.session.get("http://intranet.regis.org/infocenter/")
+                htmls = html.fromstring(htmlschedulereq.text)
+                schedule = html.tostring(htmls.xpath('//div[@id="main"]/table[4]')[0])
             else:
                 style="float:left; width:200px;"
 
@@ -163,7 +169,6 @@ class Scraper:
 
             pic_elm = intrabody.xpath('//div[@style="'+style+'"]/a')[index]
             code = pic_elm.get("href").split("/")[-1].replace(".jpg", "")
-            #print code
 
             try:
                 if userType == "student":
@@ -175,6 +180,7 @@ class Scraper:
                         "code": code,
                         "mpicture": picsrc,
                         "ipicture": pic_elm.get("href"),
+                        "schedule": schedule,
                         "email": username + "@regis.org",
                         "advisement": department,
                         "courses": courses,
@@ -182,7 +188,6 @@ class Scraper:
                     }
                     newID = self.db.students.insert_one(out).inserted_id
                     print str(ID)+": Student " + username + " in Advisement " + department + " with Student ID "+code+" in "+str(len(classes))+" courses"
-
                     if classes:
                         self.db.advisements.update_one({"mID": classes[0]}, {"$push": {"students": newID} } )
                         for c in classes: # C IS A MOODLE ID
