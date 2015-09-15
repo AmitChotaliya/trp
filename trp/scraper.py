@@ -168,8 +168,7 @@ class Scraper:
 
             if userType == "student":
                 style="float:left;width:200px;"
-                scheduleurl = 
-"http://intranet.regis.org/infocenter?StudentCode="+code
+                scheduleurl = "http://intranet.regis.org/infocenter?StudentCode="+code
             else:
                 style="float:left; width:200px;"
                 scheduleurl = "http://intranet.regis.org/infocenter/default.cfm?StaffCode="+code
