@@ -125,10 +125,6 @@ class Scraper:
 
             if userType == "student":
                 style="float:left;width:200px;"
-
-                htmlschedulereq = self.session.get("http://intranet.regis.org/infocenter/")
-                htmls = html.fromstring(htmlschedulereq.text)
-                schedule = html.tostring(htmls.xpath('//div[@id="main"]/table[4]')[0])
             else:
                 style="float:left; width:200px;"
 
@@ -170,6 +166,18 @@ class Scraper:
             pic_elm = intrabody.xpath('//div[@style="'+style+'"]/a')[index]
             code = pic_elm.get("href").split("/")[-1].replace(".jpg", "")
 
+            if userType == "student":
+                style="float:left;width:200px;"
+                scheduleurl = "http://intranet.regis.org/infocenter/"
+            else:
+                style="float:left; width:200px;"
+                scheduleurl = "http://intranet.regis.org/infocenter/default.cfm?StaffCode="+code
+
+            htmlschedulereq = self.session.get(scheduleurl)
+            htmls = html.fromstring(htmlschedulereq.text)
+            if len(htmls.xpath('//div[@id="main"]/table[4]')) > 0:
+                schedule = html.tostring(htmls.xpath('//div[@id="main"]/table[4]')[0])
+
             try:
                 if userType == "student":
                     out = {
@@ -208,6 +216,7 @@ class Scraper:
                         "department": department,
                         "firstName": name_parts[1],
                         "lastName": name_parts[0],
+                        "schedule": schedule,
                         "username": username,
                         "email": email,
                         "sclasses": classes,

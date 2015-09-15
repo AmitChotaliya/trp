@@ -9,6 +9,15 @@
 ```python
 from trp import TRP
 # TRP will initialize everything
-t = TRP(path) # path is the path to a valid secrets.json file
+t = TRP(secretsPATH, dbIP, dbPORT, dbNAME) # all arguments are optional
+# TRP("./secrets.json", "localhost", "27107", "regis")  <--- defaults
 t.scraper.scrape(1199, "person")
+```
+
+***secrets.json*** format:
+```json
+{
+  "regis_username": "usernamehere",
+  "regis_password": "passwordhere"
+}
 ```
