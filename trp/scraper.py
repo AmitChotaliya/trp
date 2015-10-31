@@ -53,9 +53,9 @@ class Scraper:
 
             if "Advisement " in name:
                 out = {
+                    "_id": ID,
                     "tID": teacher,
-                    "title": name.replace("Advisement ", ""),
-                    "mID": ID
+                    "title": name.replace("Advisement ", "")
                 }
                 print str(ID)+": Advisement " + out['title'] + " " + str(self.db.advisements.insert_one(out).inserted_id)
 
@@ -77,9 +77,9 @@ class Scraper:
                     courseType = "reach"
 
                 out = {
+                    "_id": ID,
                     "full": title,
                     "courseType": courseType,
-                    "mID": ID,
                     "title": name,
                     "students": [],
                     "grade": grade
@@ -181,7 +181,7 @@ class Scraper:
             try:
                 if userType == "student":
                     out = {
-                        "mID": ID,
+                        "_id": ID,
                         "firstName": name_parts[1],
                         "lastName": name_parts[0],
                         "username": username,
@@ -208,8 +208,8 @@ class Scraper:
                 else:
                     print str(ID)+": Staff Member " + username + " of the " + department + " Department with Staff ID "+code+" in "+str(len(classes))+" courses"
                     out = {
+                        "_id": ID,
                         "userType": userType,
-                        "mID": ID,
                         "image": picsrc,
                         "code": code,
                         "ipicture": pic_elm.get("href"),
