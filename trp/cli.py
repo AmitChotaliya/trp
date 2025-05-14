@@ -1,4 +1,4 @@
-import scraper
+from . import scraper
 
 COMMANDS = ['help', 'scrape', 'exit']
 
@@ -6,7 +6,7 @@ running = True
 
 class CLI:
     def __init__(self, db):
-        print "Initialized CLI"
+        print("Initialized CLI")
 
     def is_valid_command(self, com):
         com = com.split(" ")
@@ -24,13 +24,13 @@ class CLI:
         globals()[c](args, session)
 
     def run(self):
-        print "[COMMAND LINE]"
+        print("[COMMAND LINE]")
         while running:
-            com = raw_input("> ")
+            com = input("> ")
             if self.is_valid_command(com):
                 self.run_command(com, None)
             else:
-                print "Command not found. Type 'help' for a list of commands."
+                print("Command not found. Type 'help' for a list of commands.")
 
 
 ################## COMMANDS ##################
@@ -39,7 +39,7 @@ def exit(args, session):
     running = False
 
 def help(args, session):
-    print "\nCommand list:"
+    print("\nCommand list:")
     for com in COMMANDS:
-        print "* "+com
-    print ""
+        print("* "+com)
+    print("")

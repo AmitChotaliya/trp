@@ -9,7 +9,7 @@ import datetime
 
 class Scraper:
     def __init__(self, db, session):
-        print "Initialized Moodle Scraper"
+        print("Initialized Moodle Scraper")
         self.session = session
         self.db = db
 
@@ -57,7 +57,7 @@ class Scraper:
                     "tID": teacher,
                     "title": name.replace("Advisement ", "")
                 }
-                print str(ID)+": Advisement " + out['title'] + " " + str(self.db.advisements.insert_one(out).inserted_id)
+                print(str(ID)+": Advisement " + out['title'] + " " + str(self.db.advisements.insert_one(out).inserted_id))
 
             else:
                 grade = 13
@@ -84,7 +84,7 @@ class Scraper:
                     "students": [],
                     "grade": grade
                 }
-                print str(ID)+": Course " + str(self.db.courses.insert_one(out).inserted_id)
+                print(str(ID)+": Course " + str(self.db.courses.insert_one(out).inserted_id))
         else:
             # USER
             name_parts = parsed_body.xpath('//title/text()')[0].split(":")[0].split(", ") if len(
@@ -137,7 +137,7 @@ class Scraper:
             search_results = intrabody.xpath('//div[@style="'+style+'"]/span[1]/text()')
             #print search_results
             if len(search_results) == 0:
-                print str(ID)+": Found on Moodle but not the Intranet. Disregarding."
+                print(str(ID)+": Found on Moodle but not the Intranet. Disregarding.")
                 return # should people found only on Moodle be included?
 
             #print "Intranet found "+str(len(search_results))+" search results for", name_parts
@@ -195,7 +195,7 @@ class Scraper:
                         "sclasses": classes,
                     }
                     newID = self.db.students.insert_one(out).inserted_id
-                    print str(ID)+": Student " + username + " in Advisement " + department + " with Student ID "+code+" in "+str(len(classes))+" courses"
+                    print(str(ID)+": Student " + username + " in Advisement " + department + " with Student ID "+code+" in "+str(len(classes))+" courses")
                     if classes:
                         self.db.advisements.update_one({"mID": classes[0]}, {"$push": {"students": newID} } )
                         for c in classes: # C IS A MOODLE ID
@@ -206,7 +206,7 @@ class Scraper:
                                 self.db.students.update_one({"_id": newID}, {"$push": {"courses": cID}})
 
                 else:
-                    print str(ID)+": Staff Member " + username + " of the " + department + " Department with Staff ID "+code+" in "+str(len(classes))+" courses"
+                    print(str(ID)+": Staff Member " + username + " of the " + department + " Department with Staff ID "+code+" in "+str(len(classes))+" courses")
                     out = {
                         "_id": ID,
                         "userType": userType,
@@ -250,4 +250,4 @@ class Scraper:
 
             #raw_input("Continue?")
             except Exception as e:
-                print e
+                print(e)
